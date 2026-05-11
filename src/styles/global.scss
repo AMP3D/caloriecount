@@ -1,0 +1,71 @@
+@use 'variables' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+
+  @media (max-height: 720px) {
+    font-size: 12px;
+  }
+}
+
+body {
+  background-color: $cornsilk;
+  color: $black-forest;
+  font-family: $font-stack;
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button:disabled {
+  background-color: $disabled-background !important;
+}
+
+input:required,
+option:required,
+select:required,
+textarea:required {
+  border: 1px solid $required-border;
+}
+
+input {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.btn-icon {
+  height: 1rem;
+  vertical-align: middle;
+  width: 1rem;
+}

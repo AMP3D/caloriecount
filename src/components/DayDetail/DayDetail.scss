@@ -1,0 +1,205 @@
+@use '../../styles/variables' as *;
+
+.back-btn {
+  align-items: center;
+  color: $primary-text;
+  display: flex;
+
+  .btn-icon {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+.day-detail-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.detail-btn {
+  align-items: center;
+  background: $sunlit-clay;
+  border-radius: $radius;
+  color: $primary-text;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.3rem;
+  padding: 0.4rem 0.875rem;
+  transition: opacity $transition;
+
+  &:active {
+    opacity: 0.8;
+  }
+
+  &.delete {
+    background: $copperwood;
+  }
+}
+
+.detail-menu-bar {
+  align-items: center;
+  background: $black-forest;
+  color: $primary-text;
+  display: flex;
+  gap: 0.75rem;
+  min-height: 5rem;
+  padding: 0.875rem 1.25rem;
+}
+
+.detail-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.dropdown-item {
+  color: $black-forest;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  transition: background $transition;
+  width: 100%;
+
+  &:hover {
+    background: rgba($olive-leaf, 0.1);
+  }
+
+  &.delete {
+    color: $copperwood;
+  }
+}
+
+.empty-state {
+  color: $olive-leaf;
+  padding: 2rem;
+  text-align: center;
+}
+
+.entry-amount {
+  color: $olive-leaf;
+  font-size: 0.75rem;
+}
+
+.entry-brand {
+  color: $olive-leaf;
+  font-size: 0.75rem;
+}
+
+.entry-cals {
+  color: $copperwood;
+  font-weight: 600;
+}
+
+.entry-checkbox {
+  accent-color: $sunlit-clay;
+  cursor: pointer;
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+.entry-dropdown {
+  background: white;
+  border: 1px solid rgba($olive-leaf, 0.2);
+  border-radius: $radius;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  min-width: 7rem;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+}
+
+.entry-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.entry-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.75rem;
+}
+
+.entry-menu-btn {
+  align-items: center;
+  border-radius: $radius;
+  color: $olive-leaf;
+  display: flex;
+  padding: 0.25rem;
+  transition: background $transition;
+
+  &:hover {
+    background: rgba($olive-leaf, 0.1);
+  }
+
+  .btn-icon {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+.entry-menu-wrapper {
+  position: relative;
+}
+
+.entry-meta {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.entry-row {
+  align-items: center;
+  border-bottom: 1px solid rgba($olive-leaf, 0.15);
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.875rem 0.75rem;
+  transition: background $transition;
+
+  &.selected {
+    background: rgba($sunlit-clay, 0.12);
+  }
+}
+
+.entry-time {
+  color: $olive-leaf;
+  font-size: 0.75rem;
+}
+
+.entry-title {
+  font-weight: 500;
+}
+
+.total-calories {
+  align-items: center;
+  background: $olive-leaf;
+  color: $primary-text;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.total-label {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
