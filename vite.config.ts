@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
-  base: '/caloriecount/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/caloriecount/' : '/',
   plugins: [
     react(),
     babel({
@@ -43,4 +43,4 @@ export default defineConfig({
       },
     }),
   ],
-});
+}));
