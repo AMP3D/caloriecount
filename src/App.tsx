@@ -4,7 +4,7 @@ import { DayDetail } from './components/DayDetail/DayDetail';
 import { DayList } from './components/DayList/DayList';
 
 export const App = () => (
-  <BrowserRouter>
+  <BrowserRouter basename="/caloriecount">
     <Routes>
       <Route element={<DayList />} path="/" />
 
