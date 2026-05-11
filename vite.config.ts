@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/caloriecount/',
   plugins: [
     react(),
     babel({
@@ -20,7 +21,7 @@ export default defineConfig({
         background_color: '#fefae0',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/caloriecount/',
         icons: [
           {
             src: 'pwa-192x192.png',
