@@ -20,22 +20,22 @@ textarea {
   resize: vertical;
 }
 
+.add-btn {
+  background: $sunlit-clay;
+  border-radius: $radius;
+  color: $primary-text;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  transition: opacity $transition;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
 .amount-row {
   display: flex;
   gap: 0.5rem;
-
-  .add-btn {
-    background: $sunlit-clay;
-    border-radius: $radius;
-    color: $primary-text;
-    font-weight: 600;
-    padding: 0.625rem 1.25rem;
-    transition: opacity $transition;
-
-    &:active {
-      opacity: 0.8;
-    }
-  }
 
   .amount-input {
     background: white;
@@ -51,28 +51,25 @@ textarea {
   }
 }
 
-.custom-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.custom-form-row {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  justify-content: end;
-
-  > input {
-    max-width: 30%;
-  }
-}
-
 .food-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.food-delete-btn {
+  opacity: 0.6;
+  padding: 0.25rem;
+  transition: opacity $transition;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .btn-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 }
 
 .food-list {
@@ -194,12 +191,6 @@ textarea {
   text-align: center;
 }
 
-.quick-add-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
 .save-btn {
   background: $sunlit-clay;
   border-radius: $radius;
@@ -208,6 +199,11 @@ textarea {
   margin-top: 0.5rem;
   padding: 0.75rem;
   transition: opacity $transition;
+
+  &.disabled {
+    background: $disabled-background;
+    cursor: not-allowed;
+  }
 
   &:active {
     opacity: 0.8;

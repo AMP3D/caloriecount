@@ -1,0 +1,7 @@
+@use '../../styles/variables' as *;
+
+.quick-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

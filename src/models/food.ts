@@ -13,10 +13,17 @@ export interface FoodItem {
 
 export interface DayFoodEntry {
   amount: number;
+  brand?: string;
+  calories?: number;
+  carbs?: number;
   createdAt: string;
   dateId: string;
+  fat?: number;
   foodId: string;
+  groupId?: string;
   id: string;
+  name?: string;
+  protein?: number;
 }
 
 export interface DayFoodEntryWithDetails extends DayFoodEntry {

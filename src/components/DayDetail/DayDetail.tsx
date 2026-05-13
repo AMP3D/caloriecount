@@ -3,11 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { ArrowLeftIcon, EllipsisVerticalIcon, PlusIcon, TrashIcon } from '../../assets/icons';
 import type { DayFoodEntryWithDetails, FoodItem } from '../../models';
-import { currentDayEntries } from '../../state';
+import { currentDayEntries, foodGroups } from '../../state';
 import {
   addDayFoodEntry,
+  addItemToGroup,
   deleteDayFoodEntries,
   loadDayEntries,
+  loadFoodGroups,
   updateDayFoodEntry,
   updateFoodItem,
 } from '../../storage/actions';
@@ -20,7 +22,10 @@ export const DayDetail = () => {
 
   const navigate = useNavigate();
 
+  const [addToGroupEntry, setAddToGroupEntry] = useState<DayFoodEntryWithDetails | null>(null);
   const [editingEntry, setEditingEntry] = useState<DayFoodEntryWithDetails | null>(null);
+  const [editingGroupFoodId, setEditingGroupFoodId] = useState<string | undefined>(undefined);
+  const [initialGroupName, setInitialGroupName] = useState<string | undefined>(undefined);
   const [menuEntryId, setMenuEntryId] = useState<string | null>(null);
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'search'>('add');
   const [selectedEntries, setSelectedEntries] = useState<Set<string>>(new Set());
@@ -74,29 +79,48 @@ export const DayDetail = () => {
   const isSelecting = selectedEntries.size > 0;
   const totalCalories = entries.reduce((sum, e) => sum + e.calories, 0);
 
-  const handleToggleSelect = (entryId: string) => {
-    const next = new Set(selectedEntries);
+  const editingFoodItem: FoodItem | undefined = editingEntry
+    ? {
+        brand: editingEntry.brand,
+        caloriesPerServing:
+          editingEntry.amount > 0
+            ? (editingEntry.calories * editingEntry.servingSize) / editingEntry.amount
+            : 0,
+        carbsPerServing:
+          editingEntry.amount > 0
+            ? (editingEntry.carbs * editingEntry.servingSize) / editingEntry.amount
+            : 0,
+        fatPerServing:
+          editingEntry.amount > 0
+            ? (editingEntry.fat * editingEntry.servingSize) / editingEntry.amount
+            : 0,
+        id: editingEntry.foodId,
+        name: editingEntry.name,
+        proteinPerServing:
+          editingEntry.amount > 0
+            ? (editingEntry.protein * editingEntry.servingSize) / editingEntry.amount
+            : 0,
+        servingSize: editingEntry.servingSize,
+      }
+    : undefined;
 
-    if (next.has(entryId)) {
-      next.delete(entryId);
-    } else {
-      next.add(entryId);
+  const confirmDelete = async () => {
+    if (dateId) {
+      await deleteDayFoodEntries(Array.from(selectedEntries), dateId);
     }
 
-    setSelectedEntries(next);
+    setSelectedEntries(new Set());
+    setShowConfirm(false);
   };
 
-  const handleOpenAdd = () => {
-    setEditingEntry(null);
-    setModalMode('add');
-    setShowModal(true);
-  };
-
-  const handleOpenEdit = (entry: DayFoodEntryWithDetails) => {
-    setEditingEntry(entry);
+  const handleAddToGroup = async (entry: DayFoodEntryWithDetails, groupId: string) => {
+    await addItemToGroup(groupId, { amount: entry.amount, foodId: entry.foodId });
+    setAddToGroupEntry(null);
     setMenuEntryId(null);
-    setModalMode('edit');
-    setShowModal(true);
+  };
+
+  const handleDeleteSelected = () => {
+    setShowConfirm(true);
   };
 
   const handleDeleteSingle = async (entry: DayFoodEntryWithDetails) => {
@@ -107,17 +131,26 @@ export const DayDetail = () => {
     }
   };
 
-  const handleDeleteSelected = () => {
-    setShowConfirm(true);
-  };
-
-  const confirmDelete = async () => {
-    if (dateId) {
-      await deleteDayFoodEntries(Array.from(selectedEntries), dateId);
+  const handleEntryClick = (entry: DayFoodEntryWithDetails) => {
+    if (isSelecting) {
+      handleToggleSelect(entry.id);
+      return;
     }
 
-    setSelectedEntries(new Set());
-    setShowConfirm(false);
+    if (entry.brand === 'Quick Add') {
+      return;
+    }
+
+    if (entry.brand === 'Group') {
+      setEditingGroupFoodId(entry.id);
+      setInitialGroupName(entry.name);
+      setEditingEntry(null);
+      setModalMode('add');
+      setShowModal(true);
+      return;
+    }
+
+    handleOpenEdit(entry);
   };
 
   const handleFoodSelected = async (food: FoodItem, amount: number) => {
@@ -144,30 +177,38 @@ export const DayDetail = () => {
     setMenuEntryId(menuEntryId === entryId ? null : entryId);
   };
 
-  const editingFoodItem: FoodItem | undefined = editingEntry
-    ? {
-        brand: editingEntry.brand,
-        caloriesPerServing:
-          editingEntry.amount > 0
-            ? (editingEntry.calories * editingEntry.servingSize) / editingEntry.amount
-            : 0,
-        carbsPerServing:
-          editingEntry.amount > 0
-            ? (editingEntry.carbs * editingEntry.servingSize) / editingEntry.amount
-            : 0,
-        fatPerServing:
-          editingEntry.amount > 0
-            ? (editingEntry.fat * editingEntry.servingSize) / editingEntry.amount
-            : 0,
-        id: editingEntry.foodId,
-        name: editingEntry.name,
-        proteinPerServing:
-          editingEntry.amount > 0
-            ? (editingEntry.protein * editingEntry.servingSize) / editingEntry.amount
-            : 0,
-        servingSize: editingEntry.servingSize,
-      }
-    : undefined;
+  const handleOpenAdd = () => {
+    setEditingEntry(null);
+    setEditingGroupFoodId(undefined);
+    setInitialGroupName(undefined);
+    setModalMode('add');
+    setShowModal(true);
+  };
+
+  const handleOpenAddToGroup = (entry: DayFoodEntryWithDetails) => {
+    loadFoodGroups();
+    setAddToGroupEntry(entry);
+    setMenuEntryId(null);
+  };
+
+  const handleOpenEdit = (entry: DayFoodEntryWithDetails) => {
+    setEditingEntry(entry);
+    setMenuEntryId(null);
+    setModalMode('edit');
+    setShowModal(true);
+  };
+
+  const handleToggleSelect = (entryId: string) => {
+    const next = new Set(selectedEntries);
+
+    if (next.has(entryId)) {
+      next.delete(entryId);
+    } else {
+      next.add(entryId);
+    }
+
+    setSelectedEntries(next);
+  };
 
   return (
     <div className="day-detail-page">
@@ -205,11 +246,13 @@ export const DayDetail = () => {
           <div
             className={`entry-row ${selectedEntries.has(entry.id) ? 'selected' : ''}`}
             key={entry.id}
+            onClick={() => handleEntryClick(entry)}
           >
             <input
               checked={selectedEntries.has(entry.id)}
               className="entry-checkbox"
               onChange={() => handleToggleSelect(entry.id)}
+              onClick={(e) => e.stopPropagation()}
               type="checkbox"
             />
 
@@ -234,6 +277,16 @@ export const DayDetail = () => {
 
               {menuEntryId === entry.id && (
                 <div className="entry-dropdown">
+                  <button
+                    className="dropdown-item"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenAddToGroup(entry);
+                    }}
+                  >
+                    Add to Group
+                  </button>
+
                   <button
                     className="dropdown-item"
                     onClick={(e) => {
@@ -268,14 +321,47 @@ export const DayDetail = () => {
         />
       )}
 
+      {addToGroupEntry && (
+        <div className="food-modal-overlay" onClick={() => setAddToGroupEntry(null)}>
+          <div className="group-picker" onClick={(e) => e.stopPropagation()}>
+            <h3>Add "{addToGroupEntry.name}" to Group</h3>
+
+            <div className="group-picker-list">
+              {foodGroups.value.map((group) => (
+                <button
+                  className="group-picker-item"
+                  key={group.id}
+                  onClick={() => handleAddToGroup(addToGroupEntry, group.id)}
+                >
+                  {group.name}
+                </button>
+              ))}
+
+              {foodGroups.value.length === 0 && (
+                <p className="no-results">No groups yet. Create one in the Groups tab.</p>
+              )}
+            </div>
+
+            <button className="save-btn" onClick={() => setAddToGroupEntry(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {showModal && (
         <FoodModal
+          dateId={dateId}
           editingFood={editingFoodItem}
+          editingGroupFoodId={editingGroupFoodId}
           initialAmount={editingEntry?.amount}
+          initialGroupName={initialGroupName}
           mode={modalMode}
           onClose={() => {
             setShowModal(false);
             setEditingEntry(null);
+            setEditingGroupFoodId(undefined);
+            setInitialGroupName(undefined);
           }}
           onSelect={handleFoodSelected}
         />

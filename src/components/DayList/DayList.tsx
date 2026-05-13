@@ -44,34 +44,14 @@ export const DayList = () => {
   const summaries = daySummaries.value;
   const isSelecting = selectedDates.size > 0;
 
-  const handleToggleSelect = (dateId: string) => {
-    const next = new Set(selectedDates);
-
-    if (next.has(dateId)) {
-      next.delete(dateId);
-    } else {
-      next.add(dateId);
-    }
-
-    setSelectedDates(next);
-  };
-
-  const handleDeleteSelected = () => {
-    setShowConfirm(true);
-  };
-
   const confirmDelete = async () => {
     await deleteDaySummaries(Array.from(selectedDates));
     setSelectedDates(new Set());
     setShowConfirm(false);
   };
 
-  const handleRowClick = (dateId: string) => {
-    if (isSelecting) {
-      handleToggleSelect(dateId);
-    } else {
-      navigate(`/day/${dateId}`);
-    }
+  const handleDeleteSelected = () => {
+    setShowConfirm(true);
   };
 
   const handleExport = async () => {
@@ -105,6 +85,26 @@ export const DayList = () => {
   const handleMenuToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu((prev) => !prev);
+  };
+
+  const handleRowClick = (dateId: string) => {
+    if (isSelecting) {
+      handleToggleSelect(dateId);
+    } else {
+      navigate(`/day/${dateId}`);
+    }
+  };
+
+  const handleToggleSelect = (dateId: string) => {
+    const next = new Set(selectedDates);
+
+    if (next.has(dateId)) {
+      next.delete(dateId);
+    } else {
+      next.add(dateId);
+    }
+
+    setSelectedDates(next);
   };
 
   return (
@@ -195,6 +195,7 @@ export const DayList = () => {
 
       {showFoodModal && (
         <FoodModal
+          dateId={getTodayId()}
           mode="add"
           onClose={() => setShowFoodModal(false)}
           onSelect={handleFoodSelected}

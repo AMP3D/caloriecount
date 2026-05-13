@@ -1,44 +1,31 @@
 import { useState } from 'react';
 
-import type { FoodItem } from '../../models';
-import { addFoodItem, updateFoodItem } from '../../storage/actions';
+import { addQuickEntry } from '../../storage/actions';
+import './QuickAddTab.scss';
 
 interface QuickAddTabProps {
-  editingFood?: FoodItem;
-  onSelect: (food: FoodItem, amount: number) => void;
+  dateId: string;
+  onSaved: () => void;
 }
 
-export const QuickAddTab = ({ editingFood, onSelect }: QuickAddTabProps) => {
+export const QuickAddTab = ({ dateId, onSaved }: QuickAddTabProps) => {
   const [calories, setCalories] = useState('');
+  const [name, setName] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (Number(calories) <= 0) {
       return;
     }
 
-    const foodData = {
-      brand: 'Quick Add',
-      caloriesPerServing: Number(calories),
-      carbsPerServing: 0,
-      fatPerServing: 0,
-      name: 'Quick Add',
-      proteinPerServing: 0,
-      servingSize: 1,
-    };
-
-    if (editingFood) {
-      const updated = { ...editingFood, ...foodData };
-      updateFoodItem(updated);
-      onSelect(updated, 1);
-    } else {
-      addFoodItem(foodData).then((newFood) => {
-        onSelect(newFood, 1);
-      });
-    }
+    await addQuickEntry(dateId, Number(calories), name.trim() || undefined);
+    onSaved();
   };
 
   return (
     <div className="quick-add-form">
+      <label htmlFor="name">Name (optional)</label>
+      <textarea id="quick-add-name" onChange={(e) => setName(e.target.value)} value={name} />
+
       <label htmlFor="quick-add-calories">Calories</label>
       <input
         id="quick-add-calories"
@@ -55,7 +42,7 @@ export const QuickAddTab = ({ editingFood, onSelect }: QuickAddTabProps) => {
         disabled={Number(calories) <= 0}
         onClick={handleSave}
       >
-        Save
+        Add
       </button>
     </div>
   );

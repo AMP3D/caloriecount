@@ -1,9 +1,10 @@
 import Dexie, { type Table } from 'dexie';
 
-import type { DayFoodEntry, FoodItem } from '../models';
+import type { DayFoodEntry, FoodGroup, FoodItem } from '../models';
 
 class CalorieDatabase extends Dexie {
   dayFoodEntries!: Table<DayFoodEntry>;
+  foodGroups!: Table<FoodGroup>;
   foodItems!: Table<FoodItem>;
 
   constructor() {
@@ -64,6 +65,12 @@ class CalorieDatabase extends Dexie {
             entry.createdAt = entry.createdAt ?? new Date().toISOString();
           }),
       );
+
+    this.version(5).stores({
+      dayFoodEntries: 'id, dateId, foodId',
+      foodGroups: 'id, name',
+      foodItems: 'id, brand, name, barcode',
+    });
   }
 }
 

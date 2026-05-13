@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import { TrashIcon } from '../../assets/icons';
 import type { FoodItem } from '../../models';
 import { foodDatabase } from '../../state';
-import { loadFoodDatabase } from '../../storage/actions';
+import { deleteFoodItem, loadFoodDatabase } from '../../storage/actions';
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog';
 
 interface SearchTabProps {
   onSelect: (food: FoodItem, amount: number) => void;
@@ -10,6 +12,7 @@ interface SearchTabProps {
 
 export const SearchTab = ({ onSelect }: SearchTabProps) => {
   const [amount, setAmount] = useState('');
+  const [deletingFood, setDeletingFood] = useState<FoodItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
@@ -23,10 +26,34 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
     return f.name.toLowerCase().includes(query) || f.brand.toLowerCase().includes(query);
   });
 
-  const handleConfirmSelection = () => {
-    if (selectedFood && parseFloat(amount) > 0) {
-      onSelect(selectedFood, parseFloat(amount));
+  const handleConfirmDelete = async () => {
+    if (!deletingFood) {
+      return;
     }
+
+    await deleteFoodItem(deletingFood.id);
+
+    if (selectedFood?.id === deletingFood.id) {
+      setSelectedFood(null);
+    }
+
+    setDeletingFood(null);
+  };
+
+  const handleConfirmSelection = () => {
+    if (!selectedFood) {
+      return;
+    }
+
+    const parsedAmount = parseFloat(amount);
+    const finalAmount = parsedAmount > 0 ? parsedAmount : selectedFood.servingSize;
+
+    onSelect(selectedFood, finalAmount);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, food: FoodItem) => {
+    e.stopPropagation();
+    setDeletingFood(food);
   };
 
   return (
@@ -52,8 +79,12 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
             </div>
 
             <div className="food-cals">
-              {food.caloriesPerServing} cal / {food.servingSize} g
+              {Math.round(food.caloriesPerServing)} cal / {food.servingSize}g
             </div>
+
+            <button className="food-delete-btn" onClick={(e) => handleDeleteClick(e, food)}>
+              <TrashIcon className="btn-icon" />
+            </button>
           </div>
         ))}
 
@@ -67,7 +98,7 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
           <input
             className="amount-input"
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="Amount (g)"
+            placeholder={`Amount (g) — default: ${selectedFood.servingSize}g`}
             type="number"
             value={amount}
           />
@@ -76,6 +107,14 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
             Add
           </button>
         </div>
+      )}
+
+      {deletingFood && (
+        <ConfirmDialog
+          message={`Delete "${deletingFood.name}" from the database? This cannot be undone.`}
+          onCancel={() => setDeletingFood(null)}
+          onConfirm={handleConfirmDelete}
+        />
       )}
     </>
   );
