@@ -1,6 +1,9 @@
 # Calorie Counter
 
 A lightweight PWA for tracking daily calorie intake. Runs on Android (installable via Chrome) and desktop browsers.
+Gives you the ability to track calories via your own custom food database, free of ads and nonsense.
+
+[Click here to access the app](https://amp3d.github.io/caloriecount)
 
 ## Tech Stack
 
@@ -21,13 +24,13 @@ Open `http://localhost:5173` in Chrome. Use DevTools device mode for mobile layo
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Type-check and production build |
-| `npm run preview` | Preview production build |
-| `npm run format` | Format code with Prettier |
-| `npm run lint` | Lint with ESLint |
+| Command           | Description                     |
+| ----------------- | ------------------------------- |
+| `npm run dev`     | Start dev server                |
+| `npm run build`   | Type-check and production build |
+| `npm run preview` | Preview production build        |
+| `npm run format`  | Format code with Prettier       |
+| `npm run lint`    | Lint with ESLint                |
 
 ## Install as PWA (Android)
 
