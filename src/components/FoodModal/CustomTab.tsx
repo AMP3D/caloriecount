@@ -7,7 +7,7 @@ import './CustomTab.scss';
 interface CustomTabProps {
   editingFood?: FoodItem;
   initialAmount?: number;
-  onSelect: (food: FoodItem, amount: number) => void;
+  onSelect: (food: FoodItem, amount: number, rerouteToDay?: boolean) => void;
 }
 
 export const CustomTab = ({ editingFood, initialAmount, onSelect }: CustomTabProps) => {
@@ -48,7 +48,7 @@ export const CustomTab = ({ editingFood, initialAmount, onSelect }: CustomTabPro
     if (editingFood) {
       const updated = { ...editingFood, ...foodData };
       updateFoodItem(updated);
-      onSelect(updated, parseFloat(amount) || 0);
+      onSelect(updated, parseFloat(amount) || 0, false);
     } else {
       addFoodItem(foodData).then((newFood) => {
         onSelect(newFood, parseFloat(amount) || 0);

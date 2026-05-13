@@ -24,6 +24,7 @@ export {
   deleteFoodGroup,
   loadFoodGroups,
   removeItemFromGroup,
+  reorderItemInGroup,
   updateFoodGroup,
   updateGroupForDay,
   updateItemInGroup,

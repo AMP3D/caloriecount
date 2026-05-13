@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { ArrowLeftIcon, XMarkIcon } from '../../assets/icons';
+import {
+  ArrowLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  DocumentDuplicateIcon,
+  PlusIcon,
+  XMarkIcon,
+} from '../../assets/icons';
 import type { FoodGroup, FoodItem } from '../../models';
 import { foodDatabase, foodGroups, recentFoods } from '../../state';
 import {
@@ -12,6 +19,7 @@ import {
   loadFoodGroups,
   loadRecentFoods,
   removeItemFromGroup,
+  reorderItemInGroup,
   updateFoodGroup,
   updateGroupForDay,
   updateItemInGroup,
@@ -124,6 +132,24 @@ export const GroupsTab = ({
     setShowCreateForm(false);
   };
 
+  const handleCloneGroup = async (group: FoodGroup) => {
+    const clonedGroup = await addFoodGroup(`(Copy) ${group.name}`);
+
+    for (const item of group.items) {
+      await addItemToGroup(clonedGroup.id, {
+        amount: item.amount,
+        foodId: item.foodId,
+      });
+    }
+
+    const updated = foodGroups.value.find((g) => g.id === clonedGroup.id);
+
+    if (updated) {
+      setEditingGroup(updated);
+      setEditingGroupName(updated.name);
+    }
+  };
+
   const handleAddItemToGroup = async () => {
     if (!editingGroup || !selectedFood) {
       return;
@@ -216,6 +242,20 @@ export const GroupsTab = ({
     }
   };
 
+  const handleReorderItem = async (itemId: string, direction: 'down' | 'up') => {
+    if (!editingGroup) {
+      return;
+    }
+
+    await reorderItemInGroup(editingGroup.id, itemId, direction);
+
+    const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+
+    if (updated) {
+      setEditingGroup(updated);
+    }
+  };
+
   const handleRemoveItem = async (itemId: string) => {
     if (!editingGroup) {
       return;
@@ -279,9 +319,28 @@ export const GroupsTab = ({
             <p className="no-results">No items yet. Search or pick from recent foods below.</p>
           )}
 
-          {groupItemDetails.map((item) => (
+          {groupItemDetails.map((item, index) => (
             <div className="groups-item-row" key={item.id}>
+              <div className="groups-item-reorder">
+                <button
+                  className="groups-reorder-btn"
+                  disabled={index === 0}
+                  onClick={() => handleReorderItem(item.id, 'up')}
+                >
+                  <ChevronUpIcon className="btn-icon" />
+                </button>
+
+                <button
+                  className="groups-reorder-btn"
+                  disabled={index === groupItemDetails.length - 1}
+                  onClick={() => handleReorderItem(item.id, 'down')}
+                >
+                  <ChevronDownIcon className="btn-icon" />
+                </button>
+              </div>
+
               <div className="groups-item-info">
+                <span className="groups-item-brand">{item.food?.brand}</span>
                 <span className="groups-item-name">{item.name}</span>
                 <span className="groups-item-meta">{item.calories} cal</span>
               </div>
@@ -477,10 +536,14 @@ export const GroupsTab = ({
                 <span className="food-cals">{totalCals} cal</span>
 
                 {dateId && group.items.length > 0 && (
-                  <button className="add-btn" onClick={() => handleAddToDay(group)}>
-                    Add
+                  <button className="groups-action-btn" onClick={() => handleAddToDay(group)}>
+                    <PlusIcon className="btn-icon" />
                   </button>
                 )}
+
+                <button className="groups-action-btn" onClick={() => handleCloneGroup(group)}>
+                  <DocumentDuplicateIcon className="btn-icon" />
+                </button>
 
                 <button className="groups-remove-btn" onClick={() => handleDeleteGroup(group.id)}>
                   <XMarkIcon className="btn-icon" />

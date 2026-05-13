@@ -86,6 +86,39 @@ export const loadFoodGroups = async (): Promise<void> => {
   );
 };
 
+export const reorderItemInGroup = async (
+  groupId: string,
+  itemId: string,
+  direction: 'down' | 'up',
+): Promise<void> => {
+  const group = await db.foodGroups.get(groupId);
+
+  if (!group) {
+    return;
+  }
+
+  const index = group.items.findIndex((i) => i.id === itemId);
+
+  if (index === -1) {
+    return;
+  }
+
+  const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+  if (targetIndex < 0 || targetIndex >= group.items.length) {
+    return;
+  }
+
+  const items = [...group.items];
+  const [moved] = items.splice(index, 1);
+
+  items.splice(targetIndex, 0, moved);
+  group.items = items;
+
+  await db.foodGroups.put(group);
+  await loadFoodGroups();
+};
+
 export const removeItemFromGroup = async (groupId: string, itemId: string): Promise<void> => {
   const group = await db.foodGroups.get(groupId);
 

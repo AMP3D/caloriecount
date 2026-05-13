@@ -19,6 +19,7 @@ interface FoodModalProps {
   initialGroupName?: string;
   mode: 'add' | 'edit' | 'search';
   onClose: () => void;
+  onGroupAdded?: () => void;
   onSelect: (food: FoodItem, amount: number) => void;
 }
 
@@ -30,10 +31,12 @@ export const FoodModal = ({
   initialGroupName,
   mode,
   onClose,
+  onGroupAdded,
   onSelect,
 }: FoodModalProps) => {
   const defaultTab: TabId = initialGroupName ? 'groups' : mode === 'edit' ? 'custom' : 'search';
   const [activeTab, setActiveTab] = useState<TabId>(defaultTab);
+  const [editingFromSearch, setEditingFromSearch] = useState<FoodItem | undefined>(undefined);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -110,10 +113,22 @@ export const FoodModal = ({
         )}
 
         <div className="food-modal-body">
-          {activeTab === 'search' && <SearchTab onSelect={onSelect} />}
+          {activeTab === 'search' && (
+            <SearchTab
+              onEdit={(food) => {
+                setEditingFromSearch(food);
+                setActiveTab('custom');
+              }}
+              onSelect={onSelect}
+            />
+          )}
 
           {activeTab === 'recent' && (
-            <RecentTab dateId={dateId} onGroupAdded={onClose} onSelect={onSelect} />
+            <RecentTab
+              dateId={dateId}
+              onGroupAdded={onGroupAdded ?? onClose}
+              onSelect={onSelect}
+            />
           )}
 
           {activeTab === 'groups' && (
@@ -121,13 +136,13 @@ export const FoodModal = ({
               dateId={dateId}
               editingFoodId={editingGroupFoodId}
               initialGroupName={initialGroupName}
-              onGroupAdded={onClose}
+              onGroupAdded={onGroupAdded ?? onClose}
             />
           )}
 
           {activeTab === 'custom' && (
             <CustomTab
-              editingFood={editingFood}
+              editingFood={editingFood ?? editingFromSearch}
               initialAmount={initialAmount}
               onSelect={onSelect}
             />

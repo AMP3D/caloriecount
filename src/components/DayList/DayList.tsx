@@ -59,12 +59,18 @@ export const DayList = () => {
     await exportDatabase();
   };
 
-  const handleFoodSelected = (food: FoodItem, amount: number) => {
+  const handleFoodSelected = async (food: FoodItem, amount: number, rerouteToDay = true) => {
+    const todayId = getTodayId();
+
     if (amount > 0) {
-      addDayFoodEntry(getTodayId(), food.id, amount);
+      await addDayFoodEntry(todayId, food.id, amount);
     }
 
     setShowFoodModal(false);
+
+    if (rerouteToDay) {
+      navigate(`/day/${todayId}`);
+    }
   };
 
   const handleImport = () => {
@@ -143,13 +149,7 @@ export const DayList = () => {
             )}
           </div>
 
-          <input
-            accept=".json"
-            hidden
-            onChange={handleImportFile}
-            ref={fileInputRef}
-            type="file"
-          />
+          <input accept=".json" hidden onChange={handleImportFile} ref={fileInputRef} type="file" />
         </div>
       </header>
 
@@ -198,6 +198,10 @@ export const DayList = () => {
           dateId={getTodayId()}
           mode="add"
           onClose={() => setShowFoodModal(false)}
+          onGroupAdded={() => {
+            setShowFoodModal(false);
+            navigate(`/day/${getTodayId()}`);
+          }}
           onSelect={handleFoodSelected}
         />
       )}

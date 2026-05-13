@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import { TrashIcon } from '../../assets/icons';
+import { PencilSquareIcon, TrashIcon } from '../../assets/icons';
 import type { FoodItem } from '../../models';
 import { foodDatabase } from '../../state';
 import { deleteFoodItem, loadFoodDatabase } from '../../storage/actions';
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog';
 
 interface SearchTabProps {
+  onEdit: (food: FoodItem) => void;
   onSelect: (food: FoodItem, amount: number) => void;
 }
 
-export const SearchTab = ({ onSelect }: SearchTabProps) => {
+export const SearchTab = ({ onEdit, onSelect }: SearchTabProps) => {
   const [amount, setAmount] = useState('');
   const [deletingFood, setDeletingFood] = useState<FoodItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,6 +57,11 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
     setDeletingFood(food);
   };
 
+  const handleEditClick = (e: React.MouseEvent, food: FoodItem) => {
+    e.stopPropagation();
+    onEdit(food);
+  };
+
   return (
     <>
       <input
@@ -79,12 +85,18 @@ export const SearchTab = ({ onSelect }: SearchTabProps) => {
             </div>
 
             <div className="food-cals">
-              {Math.round(food.caloriesPerServing)} cal / {food.servingSize}g
-            </div>
+              <span>
+                {Math.round(food.caloriesPerServing)} cal / {food.servingSize}g
+              </span>
 
-            <button className="food-delete-btn" onClick={(e) => handleDeleteClick(e, food)}>
-              <TrashIcon className="btn-icon" />
-            </button>
+              <button className="food-edit-btn" onClick={(e) => handleEditClick(e, food)}>
+                <PencilSquareIcon className="btn-icon" />
+              </button>
+
+              <button className="food-delete-btn" onClick={(e) => handleDeleteClick(e, food)}>
+                <TrashIcon className="btn-icon" />
+              </button>
+            </div>
           </div>
         ))}
 

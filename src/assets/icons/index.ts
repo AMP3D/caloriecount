@@ -1,6 +1,10 @@
 export { ArrowLeftIcon } from './ArrowLeftIcon';
+export { ChevronDownIcon } from './ChevronDownIcon';
+export { ChevronUpIcon } from './ChevronUpIcon';
+export { DocumentDuplicateIcon } from './DocumentDuplicateIcon';
 export { EllipsisVerticalIcon } from './EllipsisVerticalIcon';
 export { MagnifyingGlassIcon } from './MagnifyingGlassIcon';
+export { PencilSquareIcon } from './PencilSquareIcon';
 export { PlusIcon } from './PlusIcon';
 export { TrashIcon } from './TrashIcon';
 export { XMarkIcon } from './XMarkIcon';
