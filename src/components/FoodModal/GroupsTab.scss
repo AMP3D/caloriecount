@@ -52,8 +52,10 @@
 
 .groups-detail {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.75rem;
+  min-height: 0;
 }
 
 .groups-detail-header {
@@ -126,8 +128,9 @@
 
 .groups-items-list {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  max-height: 12rem;
+  min-height: 0;
   overflow-y: auto;
 }
 
