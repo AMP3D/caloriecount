@@ -1,21 +1,32 @@
 import type { DayFoodEntry, FoodGroup, FoodItem } from '../models';
-import { db } from './db';
 import { loadDaySummaries } from './day-actions';
-import { loadFoodDatabase } from './food-actions';
+import { db } from './db';
+import { loadFoodDatabase, loadRecentFoods } from './food-actions';
 import { loadFoodGroups } from './group-actions';
 
 export const exportDatabase = async (): Promise<void> => {
   const dayFoodEntries = await db.dayFoodEntries.toArray();
-  const foodGroups = await db.foodGroups.toArray();
+  const groups = await db.foodGroups.toArray();
   const foodItems = await db.foodItems.toArray();
 
-  const payload = JSON.stringify({ dayFoodEntries, foodGroups, foodItems }, null, 2);
+  const payload = JSON.stringify({ dayFoodEntries, foodGroups: groups, foodItems }, null, 2);
   const blob = new Blob([payload], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
   const anchor = document.createElement('a');
 
-  anchor.download = `calorie-counter-${new Date().toISOString().slice(0, 19)}.json`;
+  anchor.download = `caloriecounter${new Date()
+    .toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+    .replace(/\D/g, '')
+    .replace(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2}).*/, '$1$2$3T$4$5$6')}.json`;
   anchor.href = url;
   anchor.click();
 
@@ -29,6 +40,10 @@ export const importDatabase = async (file: File): Promise<void> => {
     foodGroups?: FoodGroup[];
     foodItems?: FoodItem[];
   };
+
+  await db.foodItems.clear();
+  await db.dayFoodEntries.clear();
+  await db.foodGroups.clear();
 
   if (data.foodItems?.length) {
     await db.foodItems.bulkPut(data.foodItems);
@@ -45,4 +60,5 @@ export const importDatabase = async (file: File): Promise<void> => {
   await loadDaySummaries();
   await loadFoodDatabase();
   await loadFoodGroups();
+  await loadRecentFoods();
 };

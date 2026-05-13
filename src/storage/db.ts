@@ -71,6 +71,12 @@ class CalorieDatabase extends Dexie {
       foodGroups: 'id, name',
       foodItems: 'id, brand, name, barcode',
     });
+
+    this.version(6).stores({
+      dayFoodEntries: 'id, dateId, foodId, groupId',
+      foodGroups: 'id, name',
+      foodItems: 'id, brand, name, barcode',
+    });
   }
 }
 
