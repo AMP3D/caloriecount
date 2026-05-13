@@ -1,1 +1,9 @@
-export { currentDayEntries, daySummaries, foodDatabase, isLoading, recentFoods } from './appState';
+export {
+  currentDayEntries,
+  daySummaries,
+  foodDatabase,
+  foodGroups,
+  isLoading,
+  recentFoods,
+  recentGroupIds,
+} from './appState';

@@ -1,0 +1,19 @@
+@use '../../styles/variables' as *;
+
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.custom-form-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: end;
+
+  > input {
+    max-width: 30%;
+  }
+}

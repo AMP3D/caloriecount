@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import type { FoodItem } from '../../models';
 import { addFoodItem, updateFoodItem } from '../../storage/actions';
+import './CustomTab.scss';
 
 interface CustomTabProps {
   editingFood?: FoodItem;
@@ -146,7 +147,7 @@ export const CustomTab = ({ editingFood, initialAmount, onSelect }: CustomTabPro
         disabled={!canSave}
         onClick={handleSave}
       >
-        {editingFood ? 'Update & Save' : 'Save & Add'}
+        {editingFood ? 'Update' : 'Add'}
       </button>
     </div>
   );
