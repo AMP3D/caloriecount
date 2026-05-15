@@ -48,6 +48,7 @@ export const addGroupToDay = async (dateId: string, group: FoodGroup): Promise<v
     fat: Math.round(totalFat),
     foodId: '',
     groupId: group.id,
+    groupItems: group.items.map((i) => ({ ...i })),
     id: uuid(),
     name: group.name,
     protein: Math.round(totalProtein),
@@ -168,6 +169,7 @@ export const updateGroupForDay = async (
     calories: Math.round(totalCalories),
     carbs: Math.round(totalCarbs),
     fat: Math.round(totalFat),
+    groupItems: group.items.map((i) => ({ ...i })),
     name: group.name,
     protein: Math.round(totalProtein),
   });

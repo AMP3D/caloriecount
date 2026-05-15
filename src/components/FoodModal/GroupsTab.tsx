@@ -8,7 +8,7 @@ import {
   PlusIcon,
   XMarkIcon,
 } from '../../assets/icons';
-import type { FoodGroup, FoodItem } from '../../models';
+import type { FoodGroup, FoodGroupItem, FoodItem } from '../../models';
 import { foodDatabase, foodGroups, recentFoods } from '../../state';
 import {
   addFoodGroup,
@@ -29,6 +29,7 @@ import './GroupsTab.scss';
 interface GroupsTabProps {
   dateId?: string;
   editingFoodId?: string;
+  initialGroupItems?: FoodGroupItem[];
   initialGroupName?: string;
   onGroupAdded?: () => void;
 }
@@ -36,6 +37,7 @@ interface GroupsTabProps {
 export const GroupsTab = ({
   dateId,
   editingFoodId,
+  initialGroupItems,
   initialGroupName,
   onGroupAdded,
 }: GroupsTabProps) => {
@@ -63,7 +65,23 @@ export const GroupsTab = ({
   }, []);
 
   useEffect(() => {
-    if (!initialGroupName || foodGroups.value.length === 0) {
+    if (!initialGroupName) {
+      return;
+    }
+
+    if (editingFoodId && initialGroupItems) {
+      const localGroup: FoodGroup = {
+        id: `day-snapshot-${editingFoodId}`,
+        items: initialGroupItems.map((i) => ({ ...i })),
+        name: initialGroupName,
+      };
+
+      setEditingGroup(localGroup);
+      setEditingGroupName(localGroup.name);
+      return;
+    }
+
+    if (foodGroups.value.length === 0) {
       return;
     }
 
@@ -75,7 +93,7 @@ export const GroupsTab = ({
       setEditingGroup(match);
       setEditingGroupName(match.name);
     }
-  }, [initialGroupName, foodGroups.value]);
+  }, [initialGroupName, initialGroupItems, editingFoodId, foodGroups.value]);
 
   const filteredFoods = useMemo(() => {
     if (!itemSearchQuery.trim()) {
@@ -158,15 +176,21 @@ export const GroupsTab = ({
     const parsedAmount = parseFloat(itemAmount);
     const amount = parsedAmount > 0 ? parsedAmount : selectedFood.servingSize;
 
-    await addItemToGroup(editingGroup.id, {
-      amount,
-      foodId: selectedFood.id,
-    });
+    if (editingFoodId) {
+      const newItem = { amount, foodId: selectedFood.id, id: crypto.randomUUID() };
 
-    const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+      setEditingGroup({ ...editingGroup, items: [...editingGroup.items, newItem] });
+    } else {
+      await addItemToGroup(editingGroup.id, {
+        amount,
+        foodId: selectedFood.id,
+      });
 
-    if (updated) {
-      setEditingGroup(updated);
+      const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+
+      if (updated) {
+        setEditingGroup(updated);
+      }
     }
 
     setItemAmount('');
@@ -220,7 +244,15 @@ export const GroupsTab = ({
     const parsedAmount = parseFloat(value);
 
     if (parsedAmount > 0) {
-      await updateItemInGroup(editingGroup.id, itemId, parsedAmount);
+      if (editingFoodId) {
+        const updatedItems = editingGroup.items.map((item) =>
+          item.id === itemId ? { ...item, amount: parsedAmount } : item,
+        );
+
+        setEditingGroup({ ...editingGroup, items: updatedItems });
+      } else {
+        await updateItemInGroup(editingGroup.id, itemId, parsedAmount);
+      }
     }
   };
 
@@ -247,12 +279,27 @@ export const GroupsTab = ({
       return;
     }
 
-    await reorderItemInGroup(editingGroup.id, itemId, direction);
+    if (editingFoodId) {
+      const items = [...editingGroup.items];
+      const index = items.findIndex((i) => i.id === itemId);
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
-    const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+      if (index === -1 || targetIndex < 0 || targetIndex >= items.length) {
+        return;
+      }
 
-    if (updated) {
-      setEditingGroup(updated);
+      const [moved] = items.splice(index, 1);
+
+      items.splice(targetIndex, 0, moved);
+      setEditingGroup({ ...editingGroup, items });
+    } else {
+      await reorderItemInGroup(editingGroup.id, itemId, direction);
+
+      const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+
+      if (updated) {
+        setEditingGroup(updated);
+      }
     }
   };
 
@@ -261,12 +308,18 @@ export const GroupsTab = ({
       return;
     }
 
-    await removeItemFromGroup(editingGroup.id, itemId);
+    if (editingFoodId) {
+      const updatedItems = editingGroup.items.filter((item) => item.id !== itemId);
 
-    const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+      setEditingGroup({ ...editingGroup, items: updatedItems });
+    } else {
+      await removeItemFromGroup(editingGroup.id, itemId);
 
-    if (updated) {
-      setEditingGroup(updated);
+      const updated = foodGroups.value.find((g) => g.id === editingGroup.id);
+
+      if (updated) {
+        setEditingGroup(updated);
+      }
     }
   };
 

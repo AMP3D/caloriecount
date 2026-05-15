@@ -13,6 +13,11 @@
   gap: 1rem;
   justify-content: end;
 
+  &.horizontal-line {
+    border-bottom: 1px solid $olive-leaf;
+    padding-bottom: 0.25rem;
+  }
+
   > input {
     max-width: 30%;
   }

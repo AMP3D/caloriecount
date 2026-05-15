@@ -1,3 +1,5 @@
+import type { FoodGroupItem } from './food-group';
+
 export interface FoodItem {
   barcode?: string;
   brand: string;
@@ -21,6 +23,7 @@ export interface DayFoodEntry {
   fat?: number;
   foodId: string;
   groupId?: string;
+  groupItems?: FoodGroupItem[];
   id: string;
   name?: string;
   protein?: number;

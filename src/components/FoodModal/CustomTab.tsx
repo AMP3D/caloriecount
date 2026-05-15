@@ -74,6 +74,16 @@ export const CustomTab = ({ editingFood, initialAmount, onSelect }: CustomTabPro
         value={name}
       />
 
+      <div className="custom-form-row horizontal-line">
+        <label htmlFor="amount">Amount to log today (g)</label>
+        <input
+          id="amount"
+          onChange={(e) => setAmount(e.target.value)}
+          type="number"
+          value={amount}
+        />
+      </div>
+
       <div className="custom-form-row">
         <label htmlFor="servingSize">Serving Size (g)</label>
         <input
@@ -128,16 +138,6 @@ export const CustomTab = ({ editingFood, initialAmount, onSelect }: CustomTabPro
           step="0.01"
           type="number"
           value={proteinPerServing}
-        />
-      </div>
-
-      <div className="custom-form-row">
-        <label htmlFor="amount">Amount to log (g)</label>
-        <input
-          id="amount"
-          onChange={(e) => setAmount(e.target.value)}
-          type="number"
-          value={amount}
         />
       </div>
 

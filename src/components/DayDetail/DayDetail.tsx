@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ArrowLeftIcon, EllipsisVerticalIcon, PlusIcon, TrashIcon } from '../../assets/icons';
-import type { DayFoodEntryWithDetails, FoodItem } from '../../models';
+import type { DayFoodEntryWithDetails, FoodGroupItem, FoodItem } from '../../models';
 import { currentDayEntries, foodGroups } from '../../state';
 import {
   addDayFoodEntry,
@@ -25,6 +25,7 @@ export const DayDetail = () => {
   const [addToGroupEntry, setAddToGroupEntry] = useState<DayFoodEntryWithDetails | null>(null);
   const [editingEntry, setEditingEntry] = useState<DayFoodEntryWithDetails | null>(null);
   const [editingGroupFoodId, setEditingGroupFoodId] = useState<string | undefined>(undefined);
+  const [initialGroupItems, setInitialGroupItems] = useState<FoodGroupItem[] | undefined>(undefined);
   const [initialGroupName, setInitialGroupName] = useState<string | undefined>(undefined);
   const [menuEntryId, setMenuEntryId] = useState<string | null>(null);
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'search'>('add');
@@ -143,6 +144,7 @@ export const DayDetail = () => {
 
     if (entry.brand === 'Group') {
       setEditingGroupFoodId(entry.id);
+      setInitialGroupItems(entry.groupItems);
       setInitialGroupName(entry.name);
       setEditingEntry(null);
       setModalMode('add');
@@ -180,6 +182,7 @@ export const DayDetail = () => {
   const handleOpenAdd = () => {
     setEditingEntry(null);
     setEditingGroupFoodId(undefined);
+    setInitialGroupItems(undefined);
     setInitialGroupName(undefined);
     setModalMode('add');
     setShowModal(true);
@@ -265,9 +268,7 @@ export const DayDetail = () => {
             <div className="entry-meta">
               <span className="entry-cals">{entry.calories} cal</span>
 
-              {entry.brand !== 'Quick Add' && (
-                <span className="entry-amount">{entry.amount}g</span>
-              )}
+              {entry.brand !== 'Quick Add' && <span className="entry-amount">{entry.amount}g</span>}
             </div>
 
             <div className="entry-menu-wrapper">
@@ -277,15 +278,17 @@ export const DayDetail = () => {
 
               {menuEntryId === entry.id && (
                 <div className="entry-dropdown">
-                  <button
-                    className="dropdown-item"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenAddToGroup(entry);
-                    }}
-                  >
-                    Add to Group
-                  </button>
+                  {entry.brand !== 'Group' && (
+                    <button
+                      className="dropdown-item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenAddToGroup(entry);
+                      }}
+                    >
+                      Add to Group
+                    </button>
+                  )}
 
                   <button
                     className="dropdown-item"
@@ -355,12 +358,14 @@ export const DayDetail = () => {
           editingFood={editingFoodItem}
           editingGroupFoodId={editingGroupFoodId}
           initialAmount={editingEntry?.amount}
+          initialGroupItems={initialGroupItems}
           initialGroupName={initialGroupName}
           mode={modalMode}
           onClose={() => {
             setShowModal(false);
             setEditingEntry(null);
             setEditingGroupFoodId(undefined);
+            setInitialGroupItems(undefined);
             setInitialGroupName(undefined);
           }}
           onSelect={handleFoodSelected}

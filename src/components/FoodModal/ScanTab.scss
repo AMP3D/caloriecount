@@ -1,0 +1,89 @@
+@use '../../styles/variables' as *;
+
+.scan-barcode-reader {
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.scan-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scan-camera-container {
+  background: #1a1a1a;
+  border-radius: $radius;
+  min-height: 10rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.scan-camera-overlay {
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: $radius;
+  inset: 1rem;
+  pointer-events: none;
+  position: absolute;
+}
+
+.scan-camera-preview {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.scan-error {
+  color: $required-border;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.scan-manual-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scan-success {
+  color: $olive-leaf;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.scan-nav-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scan-step-description {
+  color: $copperwood;
+  font-size: 0.8rem;
+}
+
+.scan-step-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scan-step-label {
+  color: $olive-leaf;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.scan-step-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.scan-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+}

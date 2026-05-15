@@ -176,15 +176,19 @@
 
 .groups-recent-list {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.375rem;
+  min-height: 0;
   overflow-y: auto;
 }
 
 .groups-recent-section {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 0.375rem;
+  max-height: 12rem;
 }
 
 .groups-remove-btn {
