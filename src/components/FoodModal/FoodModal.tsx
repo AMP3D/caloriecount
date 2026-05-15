@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { XMarkIcon } from '../../assets/icons';
-import type { FoodItem } from '../../models';
+import type { FoodGroupItem, FoodItem } from '../../models';
 import { CustomTab } from './CustomTab';
 import './FoodModal.scss';
 import { GroupsTab } from './GroupsTab';
 import { QuickAddTab } from './QuickAddTab';
 import { RecentTab } from './RecentTab';
+import { ScanTab } from './ScanTab';
 import { SearchTab } from './SearchTab';
 
-type TabId = 'custom' | 'groups' | 'quick-add' | 'recent' | 'search';
+type TabId = 'custom' | 'groups' | 'quick-add' | 'recent' | 'scan' | 'search';
 
 interface FoodModalProps {
   dateId?: string;
   editingFood?: FoodItem;
   editingGroupFoodId?: string;
   initialAmount?: number;
+  initialGroupItems?: FoodGroupItem[];
   initialGroupName?: string;
   mode: 'add' | 'edit' | 'search';
   onClose: () => void;
@@ -28,6 +30,7 @@ export const FoodModal = ({
   editingFood,
   editingGroupFoodId,
   initialAmount,
+  initialGroupItems,
   initialGroupName,
   mode,
   onClose,
@@ -95,6 +98,13 @@ export const FoodModal = ({
             {!editingGroupFoodId && (
               <>
                 <button
+                  className={`tab ${activeTab === 'scan' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('scan')}
+                >
+                  Scan
+                </button>
+
+                <button
                   className={`tab ${activeTab === 'custom' ? 'active' : ''}`}
                   onClick={() => setActiveTab('custom')}
                 >
@@ -135,10 +145,13 @@ export const FoodModal = ({
             <GroupsTab
               dateId={dateId}
               editingFoodId={editingGroupFoodId}
+              initialGroupItems={initialGroupItems}
               initialGroupName={initialGroupName}
               onGroupAdded={onGroupAdded ?? onClose}
             />
           )}
+
+          {activeTab === 'scan' && <ScanTab onSelect={onSelect} />}
 
           {activeTab === 'custom' && (
             <CustomTab

@@ -1,4 +1,5 @@
 export { ArrowLeftIcon } from './ArrowLeftIcon';
+export { CameraIcon } from './CameraIcon';
 export { ChevronDownIcon } from './ChevronDownIcon';
 export { ChevronUpIcon } from './ChevronUpIcon';
 export { DocumentDuplicateIcon } from './DocumentDuplicateIcon';
